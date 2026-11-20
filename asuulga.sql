@@ -32,7 +32,7 @@ LIMIT 15;
 \echo '03. Групп ангийн багтаамж'
 SELECT session_id, class_name, starts_at, capacity, confirmed_count, waiting_count, available_spots
 FROM class_availability
-WHERE starts_at >= :'report_date'::date - INTERVAL '7 days'
+WHERE starts_at >= :'report_date'::date - INTERVAL '6 days'
   AND starts_at < :'report_date'::date + INTERVAL '1 day'
 ORDER BY starts_at, session_id;
 
