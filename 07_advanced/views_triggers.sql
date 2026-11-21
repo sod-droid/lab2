@@ -1,5 +1,3 @@
--- Codex reference implementation. Sample records are synthetic.
--- Хоёр онцгой дүрэм, тайлангийн view болон ажилтны функц.
 \set ON_ERROR_STOP on
 
 BEGIN;
@@ -31,13 +29,11 @@ BEGIN
             day_change := -(OLD.resumes_on - OLD.starts_on);
     END CASE;
 
-    -- Нэг гэрээний өөрчлөлтүүд ижил мөрийг шинэчилж, зэрэг тооцоолохоос сэргийлнэ.
     UPDATE membership_contract
     SET frozen_days = frozen_days + day_change
     WHERE contract_id = target_contract_id
     RETURNING starts_on, base_expires_on INTO contract_start, base_expiry;
 
-    -- Шинэ жил дамнасан түр зогсоолтын хоногийг тухайн хуанлийн жилд тооцно.
     IF EXISTS (
         SELECT 1
         FROM membership_freeze AS pause
@@ -51,7 +47,6 @@ BEGIN
             target_contract_id USING ERRCODE = '23514';
     END IF;
 
-    -- Эхлэх өдөр нь өмнөх зогсоолтоор сунгагдсан хүчинтэй хугацаанд багтана.
     IF EXISTS (
         SELECT 1
         FROM (
@@ -89,7 +84,6 @@ BEGIN
             USING ERRCODE = '23514';
     END IF;
 
-    -- Ангийн мөрийг түгжиж, суудал олгох ба дугаар өгөх шийдвэрийг дарааллаар гаргана.
     SELECT * INTO session_row
     FROM class_session
     WHERE session_id = target_session_id
@@ -103,7 +97,7 @@ BEGIN
         FROM class_booking AS booking
         WHERE booking.session_id = target_session_id AND booking.member_id = NEW.member_id;
         IF FOUND THEN
-            -- ON CONFLICT давтан хүсэлтийг шийдэхэд тоолуур өөрчлөгдөхгүй.
+           
             RETURN NEW;
         END IF;
 
@@ -117,7 +111,7 @@ BEGIN
             RETURNING last_waitlist_number INTO NEW.waitlist_number;
         END IF;
     ELSIF TG_OP = 'UPDATE' AND NEW.waitlist_number IS DISTINCT FROM OLD.waitlist_number THEN
-        -- Сул суудалд хүлээлгийн хамгийн бага дугаартай гишүүнийг шилжүүлж болно.
+       
         IF NEW.waitlist_number IS NOT NULL OR OLD.waitlist_number IS NULL
             OR session_row.confirmed_count >= session_row.capacity
             OR EXISTS (
