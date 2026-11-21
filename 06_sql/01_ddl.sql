@@ -12,8 +12,6 @@ CREATE TABLE person (
     area text NOT NULL CHECK (btrim(area) <> '')
 );
 
--- Хүн нь гишүүн, дасгалжуулагч эсвэл хоёулаа байж болно.
--- Хүний бүртгэлийг устгахад үүргийн бүртгэл дагана. Гүйлгээтэй бол FK устгалтыг хориглоно.
 CREATE TABLE member (
     member_id integer PRIMARY KEY REFERENCES person (person_id) ON DELETE CASCADE,
     joined_on date NOT NULL DEFAULT CURRENT_DATE,
@@ -26,7 +24,6 @@ CREATE TABLE member_phone (
     PRIMARY KEY (member_id, phone)
 );
 
--- Орлон ажиллах дасгалжуулагчийн бүртгэлийг устгавал уг холбоо хоосорно.
 CREATE TABLE trainer (
     trainer_id integer PRIMARY KEY REFERENCES person (person_id) ON DELETE CASCADE,
     specialty text NOT NULL CHECK (btrim(specialty) <> ''),
@@ -42,9 +39,6 @@ CREATE TABLE membership_plan (
     is_offered boolean NOT NULL DEFAULT true
 );
 
--- Гэрээний анхны хугацаа, тохирсон үнийг хадгалснаар багцын дараагийн өөрчлөлтөөс үл хамаарна.
--- Гэрээ, төлбөр, ангийн оролцоо зэрэг түүхтэй бичлэгийн эзнийг RESTRICT хамгаална.
--- ON UPDATE-ийн анхдагч NO ACTION нь тогтмол таних дугаарыг лавлагаатай үед солихоос сэргийлнэ.
 CREATE TABLE membership_contract (
     contract_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     member_id integer NOT NULL REFERENCES member (member_id) ON DELETE RESTRICT,
@@ -58,7 +52,6 @@ CREATE TABLE membership_contract (
     UNIQUE (member_id, starts_on)
 );
 
--- Гэрээний доторх түр зогсоолтыг эхэлсэн өдрөөр нь ялгана. resumes_on өдөр эрх дахин үйлчилнэ.
 CREATE TABLE membership_freeze (
     contract_id integer REFERENCES membership_contract (contract_id) ON DELETE RESTRICT,
     starts_on date CHECK (isfinite(starts_on)),
@@ -96,7 +89,6 @@ CREATE TABLE class_session (
     UNIQUE (trainer_id, starts_at)
 );
 
--- Олон-олон холбоонд бүртгүүлсэн цаг ба хүлээлгийн дугаарыг хадгална.
 CREATE TABLE class_booking (
     session_id integer REFERENCES class_session (session_id) ON DELETE RESTRICT,
     member_id integer REFERENCES member (member_id) ON DELETE RESTRICT,
@@ -110,7 +102,6 @@ CREATE TABLE class_booking (
     UNIQUE (session_id, member_id, status)
 );
 
--- Ирц нь тухайн ангийн баталгаажсан бүртгэлд л хамаарна.
 CREATE TABLE attendance (
     session_id integer,
     member_id integer,
