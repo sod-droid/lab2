@@ -32,7 +32,6 @@ ORDER BY person_id;
 
 UPDATE trainer SET substitute_trainer_id = CASE WHEN trainer_id = 62 THEN 45 ELSE trainer_id + 1 END;
 
--- Стандарт 1 ба 3 сарын багцын үнийн жишгийг нийтэд нээлттэй зарын лавлагаанаас авсан.
 INSERT INTO membership_plan (plan_name, duration_months, price_mnt, is_offered)
 VALUES
     ('Стандарт 1 сар', 1, 180000, true),
